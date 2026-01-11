@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, HumanizeConfig, GhostwriterConfig } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 // Changed from Flash to Pro for higher accuracy in detection
 const ANALYSIS_MODEL = "gemini-3-pro-preview";
