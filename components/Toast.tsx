@@ -1,1 +1,58 @@
-import React, { useEffect, useState } from 'react';\nimport { Check, X, Info, AlertTriangle } from 'lucide-react';\n\ninterface ToastProps {\n  message: string;\n  type?: 'success' | 'error' | 'info' | 'warning';\n  duration?: number;\n  onClose: () => void;\n}\n\nconst Toast: React.FC<ToastProps> = ({ message, type = 'success', duration = 3000, onClose }) => {\n  const [isVisible, setIsVisible] = useState(true);\n\n  useEffect(() => {\n    const timer = setTimeout(() => {\n      setIsVisible(false);\n      setTimeout(onClose, 300); // Wait for animation\n    }, duration);\n\n    return () => clearTimeout(timer);\n  }, [duration, onClose]);\n\n  const icons = {\n    success: <Check size={18} />,\n    error: <X size={18} />,\n    info: <Info size={18} />,\n    warning: <AlertTriangle size={18} />\n  };\n\n  const colors = {\n    success: 'bg-green-500 dark:bg-green-600',\n    error: 'bg-red-500 dark:bg-red-600',\n    info: 'bg-blue-500 dark:bg-blue-600',\n    warning: 'bg-yellow-500 dark:bg-yellow-600'\n  };\n\n  return (\n    <div\n      className={`fixed top-4 right-4 z-[10000] flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-xl border border-white/20 text-white transition-all duration-300 ${\n        isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'\n      } ${colors[type]}`}\n    >\n      <div className=\"flex-shrink-0\">{icons[type]}</div>\n      <p className=\"text-sm font-medium\">{message}</p>\n      <button\n        onClick={() => {\n          setIsVisible(false);\n          setTimeout(onClose, 300);\n        }}\n        className=\"ml-2 hover:bg-white/20 rounded-lg p-1 transition-colors\"\n      >\n        <X size={14} />\n      </button>\n    </div>\n  );\n};\n\nexport default Toast;
+import React, { useEffect, useState } from 'react';
+import { Check, X, Info, AlertTriangle } from 'lucide-react';
+
+interface ToastProps {
+  message: string;
+  type?: 'success' | 'error' | 'info' | 'warning';
+  duration?: number;
+  onClose: () => void;
+}
+
+const Toast: React.FC<ToastProps> = ({ message, type = 'success', duration = 3000, onClose }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      setTimeout(onClose, 300); // Wait for animation
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [duration, onClose]);
+
+  const icons = {
+    success: <Check size={18} />,
+    error: <X size={18} />,
+    info: <Info size={18} />,
+    warning: <AlertTriangle size={18} />
+  };
+
+  const colors = {
+    success: 'bg-green-500 dark:bg-green-600',
+    error: 'bg-red-500 dark:bg-red-600',
+    info: 'bg-blue-500 dark:bg-blue-600',
+    warning: 'bg-yellow-500 dark:bg-yellow-600'
+  };
+
+  return (
+    <div
+      className={`fixed top-4 right-4 z-[10000] flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-xl border border-white/20 text-white transition-all duration-300 ${
+        isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+      } ${colors[type]}`}
+    >
+      <div className="flex-shrink-0">{icons[type]}</div>
+      <p className="text-sm font-medium">{message}</p>
+      <button
+        onClick={() => {
+          setIsVisible(false);
+          setTimeout(onClose, 300);
+        }}
+        className="ml-2 hover:bg-white/20 rounded-lg p-1 transition-colors"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  );
+};
+
+export default Toast;

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import ScoreChart from './ScoreChart';
 import { AnalysisResult } from '../types';
-import { ShieldAlert, CheckCircle, Info, ScanSearch, GitCompare, BarChart3, ArrowRight, ZoomIn, ZoomOut, RotateCcw, TrendingUp, Activity, Brain } from 'lucide-react';
+import { AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle, Info, ChevronDown, ChevronUp, Sparkles, Brain, FileText, Target } from 'lucide-react';
 import { diffWords } from 'diff';
 
 interface AnalysisDashboardProps {
@@ -306,7 +306,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
                 </div>
               </div>
             )}
-          </div>
           </div>
         </div>
       )}

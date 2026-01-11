@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Copy, Eraser, AlertTriangle, Eye, Edit3, ShieldAlert, CheckCircle2, Check, Download, FileType, UploadCloud, FileUp } from 'lucide-react';
+import { Copy, Eraser, AlertTriangle, Eye, Edit3, ShieldAlert, CheckCircle2, Check, UploadCloud, FileUp } from 'lucide-react';
 import { HighlightedSegment } from '../types';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import mammoth from 'mammoth';
 
 interface TextEditorProps {
@@ -79,57 +77,6 @@ const TextEditor: React.FC<TextEditorProps> = ({
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     if (onChange) onChange(e.currentTarget.innerHTML);
-  };
-
-  const saveFile = (blob: Blob, filename: string) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportPDF = async () => {
-    const element = document.getElementById(`editor-content-${title.replace(/\s/g, '')}`);
-    if (!element) return;
-    
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    
-    pdf.setFontSize(18);
-    pdf.text("Reporte de Humanizador IA", 10, 15);
-    pdf.setFontSize(12);
-    pdf.text(`Fecha: ${new Date().toLocaleDateString()}`, 10, 22);
-    if(aiScore !== undefined) {
-        pdf.setTextColor(aiScore > 50 ? 255 : 0, 0, 0); 
-        pdf.text(`Probabilidad IA Detectada: ${aiScore}%`, 10, 30);
-        pdf.setTextColor(0, 0, 0);
-    }
-    
-    pdf.addImage(imgData, 'PNG', 0, 40, pdfWidth, pdfHeight);
-    pdf.save('humanizado-reporte.pdf');
-  };
-
-  const handleExportDoc = () => {
-    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
-        "xmlns:w='urn:schemas-microsoft-com:office:word' "+
-        "xmlns='http://www.w3.org/TR/REC-html40'>"+
-        "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
-    const footer = "</body></html>";
-    const sourceHTML = header+value+footer;
-    
-    const blob = new Blob(['\ufeff', sourceHTML], {
-        type: 'application/msword'
-    });
-    
-    saveFile(blob, `${title.replace(/\s/g, '_') || 'texto'}.doc`);
   };
 
   const processFile = async (file: File) => {
