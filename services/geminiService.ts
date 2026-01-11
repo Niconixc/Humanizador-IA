@@ -11,22 +11,92 @@ const HUMANIZE_MODEL = "gemini-3-pro-preview";
 export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> => {
   try {
     const prompt = `
-      Actúa como un lingüista forense escéptico. Tu tarea es analizar el siguiente texto para determinar si fue escrito por una IA o un humano.
+      Actúa como un detector de IA de última generación entrenado en 2025. Conoces los patrones de GPT-4, Claude, Gemini y otros modelos modernos.
       
       **PRINCIPIO DE INOCENCIA:** 
-      Debes asumir que el texto es HUMANO a menos que haya evidencia abrumadora de patrones artificiales. 
-      Si el texto tiene errores gramaticales, inconsistencias lógicas, humor sutil, o una estructura desordenada, ES HUMANO.
+      Asume que el texto es HUMANO a menos que haya evidencia abrumadora de patrones artificiales. 
+      Si el texto tiene errores, inconsistencias, humor, opiniones fuertes, o estructura desordenada, probablemente ES HUMANO.
       
-      **SEÑALES REALES DE IA (Solo marca si son evidentes):**
-      1. **Perfección Plana:** Gramática impecable pero aburrida.
-      2. **Conectores Mecánicos:** Uso excesivo de "Por lo tanto", "En conclusión", "Cabe destacar", "Es importante señalar".
-      3. **Estructura de Espejo:** Párrafos que empiezan y terminan de forma idéntica o listas muy simétricas.
-      4. **Falta de Opinión:** El texto evita tomar posturas claras o usa "algunos dicen que...".
+      **SEÑALES AVANZADAS DE IA (Analiza TODAS estas categorías):**
+      
+      1. **PATRONES LINGÜÍSTICOS:**
+         - Longitud de oraciones demasiado uniforme (todas entre 15-25 palabras)
+         - Uso excesivo de voz pasiva sin razón estilística
+         - Falta de contracciones naturales en contextos casuales
+         - Vocabulario "de diccionario" poco común en conversación real
+      
+      2. **ESTRUCTURA Y ORGANIZACIÓN:**
+         - Listas numeradas perfectamente simétricas
+         - Párrafos de longitud casi idéntica
+         - Transiciones mecánicas entre párrafos
+         - Estructura de espejo: párrafos que empiezan y terminan igual
+      
+      3. **VOCABULARIO Y ESTILO:**
+         - Palabras prohibidas: "cabe destacar", "es importante mencionar", "meticuloso", "integral", "paradigma"
+         - Evita pronombres personales de forma antinatural
+         - Uso excesivo de sinónimos forzados
+         - Adjetivos genéricos: "robusto", "versátil", "innovador"
+      
+      4. **CONTENIDO Y PROFUNDIDAD:**
+         - Información genérica sin ejemplos específicos
+         - Falta de anécdotas o experiencias personales
+         - Respuestas "equilibradas" artificialmente
+         - Evita tomar posturas claras
+      
+      5. **MARCADORES TEMPORALES:**
+         - Frases vagas: "en los últimos años", "recientemente"
+         - Falta de referencias específicas a fechas/eventos
+         - Intros genéricas: "En este artículo"
+      
+      6. **PERFECCIÓN SOSPECHOSA:**
+         - Gramática impecable pero sin personalidad
+         - Cero errores tipográficos
+         - Puntuación perfecta sin variación
+      
+      7. **DETECCIÓN DE HEDGING EXCESIVO:**
+         - Uso excesivo de: "puede ser", "podría", "tal vez", "posiblemente"
+         - Frases que evitan comprometerse: "generalmente", "típicamente", "en cierta medida"
+         - Calificadores innecesarios: "relativamente", "bastante", "algo"
+      
+      8. **FIRMAS ESPECÍFICAS DE MODELOS IA:**
+         - GPT: "It's worth noting", "It's important to", estructuras muy balanceadas
+         - Claude: "I'd be happy to", "I appreciate", tono excesivamente cortés
+         - Gemini: Listas muy organizadas, explicaciones paso a paso mecánicas
+      
+      9. **COHERENCIA CONTEXTUAL:**
+         - ¿Tiene referencias cruzadas coherentes?
+         - ¿Progresión lógica natural o forzada?
+         - ¿Ejemplos específicos y concretos o genéricos?
+         - ¿Hay contradicciones sutiles?
 
       INSTRUCCIONES DE PROCESAMIENTO HTML:
-      El texto de entrada puede contener etiquetas HTML (ej: <div>, <b>, <li>, <br>).
-      1. IGNORA las etiquetas para el análisis de estilo (no critiques el HTML).
-      2. ANALIZA solo el contenido textual legible por humanos dentro de las etiquetas.
+      El texto puede contener HTML (<div>, <b>, <li>, <br>).
+      1. IGNORA las etiquetas para el análisis
+      2. ANALIZA solo el contenido textual
+      
+      **ANÁLISIS CUANTITATIVO REQUERIDO:**
+      Además del análisis cualitativo, calcula:
+      - Longitud promedio de oraciones
+      - Variación de longitud (desviación estándar)
+      - Ratio de palabras únicas
+      - Conteo de conectores formales
+      - Ratio de voz pasiva
+      - Conteo de frases de hedging
+      
+      **SCORING GRANULAR:**
+      Proporciona scores separados (0-100) para:
+      - Patrones lingüísticos
+      - Estructura y organización
+      - Vocabulario y estilo
+      - Contenido y profundidad
+      
+      **NIVEL DE CONFIANZA:**
+      Indica tu nivel de confianza:
+      - LOW: Señales ambiguas, podría ser humano o IA
+      - MEDIUM: Algunas señales claras pero no concluyentes
+      - HIGH: Evidencia abrumadora en una dirección
+      
+      **IMPORTANTE:** Sé conservador con el score. Un texto con 2-3 señales leves = 20-40%. Solo da 70%+ si hay evidencia abrumadora.
       
       Texto a analizar:
       "${text}"
@@ -36,8 +106,8 @@ export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> =>
       model: ANALYSIS_MODEL,
       contents: prompt,
       config: {
-        // CRITICAL: Temperature very low for deterministic results. 
-        temperature: 0.1, 
+        // Optimized: Temperature increased for more nuanced analysis
+        temperature: 0.3, 
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -46,6 +116,11 @@ export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> =>
               type: Type.NUMBER,
               description: "Probabilidad de 0 a 100 de que sea IA. Sé conservador.",
             },
+            confidence: {
+              type: Type.STRING,
+              description: "Nivel de confianza: 'low', 'medium', o 'high'.",
+              enum: ["low", "medium", "high"]
+            },
             verdict: {
               type: Type.STRING,
               description: "Un veredicto corto (ej: 'Probablemente IA', 'Parece Humano').",
@@ -53,7 +128,7 @@ export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> =>
             reasoning: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "Lista de 3 razones breves.",
+              description: "Lista de 3-5 razones breves y específicas.",
             },
             highlightedSegments: {
               type: Type.ARRAY,
@@ -66,9 +141,35 @@ export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> =>
                 required: ["text", "explanation"]
               },
               description: "Fragmentos específicos robóticos.",
+            },
+            metrics: {
+              type: Type.OBJECT,
+              description: "Métricas cuantitativas del texto.",
+              properties: {
+                avgSentenceLength: { type: Type.NUMBER },
+                sentenceLengthVariation: { type: Type.NUMBER },
+                uniqueWordRatio: { type: Type.NUMBER },
+                formalConnectorCount: { type: Type.NUMBER },
+                passiveVoiceRatio: { type: Type.NUMBER },
+                hedgingPhraseCount: { type: Type.NUMBER }
+              }
+            },
+            breakdown: {
+              type: Type.OBJECT,
+              description: "Desglose granular de scores por categoría (0-100).",
+              properties: {
+                linguistic: { type: Type.NUMBER, description: "Patrones lingüísticos" },
+                structure: { type: Type.NUMBER, description: "Organización" },
+                vocabulary: { type: Type.NUMBER, description: "Vocabulario y estilo" },
+                content: { type: Type.NUMBER, description: "Profundidad del contenido" }
+              }
+            },
+            detectedModel: {
+              type: Type.STRING,
+              description: "Modelo de IA detectado si es identificable: 'GPT', 'Claude', 'Gemini', 'Unknown', o 'None' si parece humano."
             }
           },
-          required: ["aiScore", "verdict", "reasoning", "highlightedSegments"],
+          required: ["aiScore", "confidence", "verdict", "reasoning", "highlightedSegments"],
         },
       },
     });
@@ -98,11 +199,38 @@ export const humanizeText = async (
       3. NO uses Markdown.
     `;
 
+    // EXPANDED: 50+ palabras y frases que delatan IA
     const forbiddenWords = [
-      "cabe destacar", "es importante mencionar", "en conclusión", "por otro lado", 
-      "asimismo", "adicionalmente", "en resumen", "meticuloso", "integral", 
-      "ahondar", "contexto", "ámbito", "sinergia", "paradigma", "crucial", "fundamental",
-      "sumérgete en", "libera tu potencial", "revolucionario", "cambiará el juego", "panorama actual"
+      // Conectores robóticos
+      "cabe destacar", "es importante mencionar", "es importante señalar", "es fundamental destacar",
+      "en conclusión", "por otro lado", "asimismo", "adicionalmente", "en resumen",
+      "no obstante", "sin embargo", "por consiguiente", "en consecuencia", "de igual manera",
+      "por ende", "en este sentido", "a su vez", "en primer lugar", "en segundo lugar",
+      
+      // Adjetivos de IA
+      "meticuloso", "integral", "exhaustivo", "robusto", "versátil",
+      "innovador", "revolucionario", "transformador", "disruptivo", "vanguardista",
+      "holístico", "dinámico", "estratégico", "óptimo", "eficiente",
+      "sofisticado", "avanzado", "complejo", "multifacético",
+      
+      // Verbos formales excesivos
+      "ahondar", "profundizar", "implementar", "optimizar", "potenciar",
+      "maximizar", "facilitar", "posibilitar", "viabilizar", "materializar",
+      "consolidar", "fortalecer", "robustecer",
+      
+      // Frases de marketing IA
+      "sumérgete en", "libera tu potencial", "cambiará el juego", "revolucionará",
+      "panorama actual", "en el mundo de hoy", "en la era digital", "en el contexto actual",
+      "descubre cómo", "aprende a", "domina el arte de", "desbloquea el poder de",
+      "lleva tu", "al siguiente nivel", "transforma tu",
+      
+      // Sustantivos abstractos genéricos
+      "paradigma", "sinergia", "contexto", "ámbito", "entorno", "escenario",
+      "perspectiva", "enfoque", "metodología", "marco", "ecosistema", "panorama",
+      
+      // Frases introductorias típicas de IA
+      "en este artículo", "a lo largo de este texto", "en las siguientes líneas",
+      "vale la pena mencionar", "conviene señalar", "resulta importante"
     ];
 
     const isAcademic = config.tone === 'academic';
@@ -150,14 +278,34 @@ export const humanizeText = async (
       
       ${humanStyleRules}
 
-      TÁCTICAS OBLIGATORIAS:
-      1. 🚫 PALABRAS PROHIBIDAS: Si usas alguna de estas, FALLARÁS: ${forbiddenWords.join(", ")}.
-      2. 🌊 PERPLEJIDAD Y BURSTINESS (Variabilidad): 
-         - Alterna frases extremadamente cortas con frases complejas.
-         - Rompe la estructura predecible de sujeto-verbo-predicado.
-      3. 🗣️ AUTENTICIDAD:
-         - Elimina la "intro IA" típica (ej: "En el panorama digital actual..."). Ve al grano.
-         - ${!isAcademic ? 'Usa paréntesis para pensamientos laterales o comentarios al margen.' : 'Usa estructuras de oraciones variadas.'}
+      TÉCNICAS ANTI-DETECCIÓN OBLIGATORIAS:
+      
+      1. 🚫 PALABRAS PROHIBIDAS: Si usas alguna de estas, FALLARÁS: ${forbiddenWords.slice(0, 30).join(", ")}...
+      
+      2. 🌊 PERPLEJIDAD Y BURSTINESS (Variabilidad Extrema): 
+         - Alterna frases CORTAS (3-7 palabras) con frases LARGAS (20-30 palabras)
+         - Rompe la estructura predecible de sujeto-verbo-predicado
+         - Varía la longitud de párrafos (algunos de 2 líneas, otros de 6)
+      
+      3. � VARIACIÓN SINTÁCTICA:
+         - Reordena cláusulas (subordinadas antes/después)
+         - Alterna voz activa/pasiva estratégicamente
+         - Usa inversión de sujeto ocasionalmente
+      
+      4. 🗣️ INYECCIÓN DE HUMANIDAD:
+         - Añade marcadores de duda: "creo", "quizás", "probablemente"
+         - ${!isAcademic ? 'Usa paréntesis para pensamientos laterales' : 'Incluye ejemplos concretos (no genéricos)'}
+         - Muestra opinión o perspectiva personal
+      
+      5. 🎯 NATURALIZACIÓN DE VOCABULARIO:
+         - Reemplaza palabras "de diccionario" por coloquiales
+         - ${!isAcademic ? 'Usa contracciones cuando sea apropiado' : 'Prefiere palabras cortas sobre largas'}
+         - Evita sinónimos forzados, repite palabras si es natural
+      
+      6. ✨ IMPERFECCIONES CONTROLADAS:
+         - ${!isAcademic ? 'Permite redundancias ocasionales (humanos repiten ideas)' : 'Varía conectores, no uses siempre los mismos'}
+         - ${!isAcademic ? 'Usa conectores informales: "bueno", "entonces", "así que"' : 'Rompe reglas gramaticales menores si suena más natural'}
+         - Elimina intros genéricas, ve directo al punto
       `;
     }
 
@@ -200,9 +348,9 @@ export const humanizeText = async (
       model: HUMANIZE_MODEL,
       contents: prompt,
       config: {
-        temperature: 1.0, // Alta creatividad para humanizar
+        temperature: 1.2, // Increased from 1.0 for more creativity and variation
         topP: 0.95,
-        topK: 40,
+        topK: 60, // Increased from 40 for more vocabulary variety
       }
     });
 

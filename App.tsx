@@ -5,6 +5,7 @@ import LoadingStatus from './components/LoadingStatus';
 import AnalysisDashboard from './components/AnalysisDashboard';
 import HistoryDrawer from './components/HistoryDrawer';
 import GhostwriterModal from './components/GhostwriterModal';
+import Toast from './components/Toast';
 import { AnalysisResult, AppState, HumanizeConfig, HistoryItem, GhostwriterConfig } from './types';
 import { analyzeTextForAI, humanizeText } from './services/geminiService';
 
@@ -31,6 +32,7 @@ const App: React.FC = () => {
     referenceText: ''
   });
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info' | 'warning'} | null>(null);
 
   const [config, setConfig] = useState<HumanizeConfig>({
     tone: 'academic',
@@ -44,6 +46,22 @@ const App: React.FC = () => {
       try {
         setHistory(JSON.parse(savedHistory));
       } catch (e) { console.error("Failed to parse history"); }
+    }
+
+    // Load autosaved text
+    const saved = localStorage.getItem('autosave_input');
+    const timestamp = localStorage.getItem('autosave_timestamp');
+    
+    if (saved && timestamp) {
+      const savedDate = new Date(timestamp);
+      const now = new Date();
+      const hoursDiff = (now.getTime() - savedDate.getTime()) / (1000 * 60 * 60);
+      
+      // Only restore if less than 24 hours old
+      if (hoursDiff < 24) {
+        setInputText(saved);
+        setToast({ message: 'Texto restaurado desde auto-guardado', type: 'info' });
+      }
     }
   }, []);
 
@@ -59,6 +77,48 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Auto-save input text every 30 seconds
+  useEffect(() => {
+    if (!inputText) return;
+    
+    const timer = setTimeout(() => {
+      localStorage.setItem('autosave_input', inputText);
+      localStorage.setItem('autosave_timestamp', new Date().toISOString());
+    }, 30000); // 30 seconds
+
+    return () => clearTimeout(timer);
+  }, [inputText]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + Enter: Humanizar
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (inputText && appState === AppState.IDLE) {
+          handleHumanize();
+        }
+      }
+      
+      // Ctrl/Cmd + D: Detectar IA
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        if (inputText && appState === AppState.IDLE) {
+          handleAnalyze();
+        }
+      }
+      
+      // Ctrl/Cmd + K: Limpiar
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        handleClear();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyboard);
+    return () => window.removeEventListener('keydown', handleKeyboard);
+  }, [inputText, appState]);
 
   // Effect to trigger success animation when state becomes COMPLETE
   useEffect(() => {
@@ -265,6 +325,7 @@ const App: React.FC = () => {
               <select 
                 value={config.grammarLevel}
                 onChange={(e) => setConfig(prev => ({ ...prev, grammarLevel: e.target.value as any }))}
+                title="Nivel de complejidad gramatical: Secundaria (simple), Universitario (estándar), Doctorado (avanzado)"
                 className="bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-gray-200 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent block p-2.5 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 cursor-pointer"
               >
                 <option value="high-school">Secundaria</option>
@@ -275,6 +336,7 @@ const App: React.FC = () => {
               <select 
                 value={config.tone}
                 onChange={(e) => setConfig(prev => ({ ...prev, tone: e.target.value as any }))}
+                title="Tono del texto: Académico (ensayos, papers), Casual (conversacional), Creativo (narrativo)"
                 className="bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-gray-200 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent block p-2.5 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 cursor-pointer"
               >
                 <option value="academic">Académico</option>
@@ -448,6 +510,15 @@ const App: React.FC = () => {
         config={ghostwriterConfig}
         onSave={setGhostwriterConfig}
       />
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
     </div>
   );

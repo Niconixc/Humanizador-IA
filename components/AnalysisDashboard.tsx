@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import ScoreChart from './ScoreChart';
 import { AnalysisResult } from '../types';
-import { ShieldAlert, CheckCircle, Info, ScanSearch, GitCompare, BarChart3, ArrowRight, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Info, ScanSearch, GitCompare, BarChart3, ArrowRight, ZoomIn, ZoomOut, RotateCcw, TrendingUp, Activity, Brain } from 'lucide-react';
 import { diffWords } from 'diff';
 
 interface AnalysisDashboardProps {
@@ -127,9 +127,20 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
           )}
         </div>
 
-        <span className={`px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm ${isHighAi ? 'bg-red-100/80 text-red-700 dark:bg-red-900/50 dark:text-red-300' : 'bg-green-100/80 text-green-700 dark:bg-green-900/50 dark:text-green-300'}`}>
-          {analysis.verdict}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm ${isHighAi ? 'bg-red-100/80 text-red-700 dark:bg-red-900/50 dark:text-red-300' : 'bg-green-100/80 text-green-700 dark:bg-green-900/50 dark:text-green-300'}`}>
+            {analysis.verdict}
+          </span>
+          {analysis.confidence && (
+            <span className={`px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${
+              analysis.confidence === 'high' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300' :
+              analysis.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300' :
+              'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+            }`}>
+              {analysis.confidence === 'high' ? '⭐ Alta' : analysis.confidence === 'medium' ? '⚠️ Media' : '🔍 Baja'} Confianza
+            </span>
+          )}
+        </div>
       </div>
 
       {/* VIEW: REPORT (Standard) */}
@@ -184,6 +195,118 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
                 </div>
               </div>
             )}
+
+            {/* Detected AI Model */}
+            {analysis.detectedModel && analysis.detectedModel !== 'None' && (
+              <div>
+                <h4 className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <Brain size={14} className="text-purple-500" />
+                  Modelo Detectado
+                </h4>
+                <div className="bg-purple-50/50 dark:bg-purple-900/10 p-4 rounded-2xl border border-purple-100 dark:border-purple-900/20">
+                  <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+                    {analysis.detectedModel === 'Unknown' ? '🤖 IA Genérica' : `🤖 ${analysis.detectedModel}`}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                    {analysis.detectedModel === 'GPT' && 'Detectadas firmas típicas de modelos GPT (OpenAI)'}
+                    {analysis.detectedModel === 'Claude' && 'Detectadas firmas típicas de Claude (Anthropic)'}
+                    {analysis.detectedModel === 'Gemini' && 'Detectadas firmas típicas de Gemini (Google)'}
+                    {analysis.detectedModel === 'Unknown' && 'Patrones de IA detectados pero modelo no identificable'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Quantitative Metrics */}
+            {analysis.metrics && (
+              <div>
+                <h4 className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <Activity size={14} className="text-blue-500" />
+                  Métricas Cuantitativas
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Long. Promedio</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analysis.metrics.avgSentenceLength.toFixed(1)}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">palabras/oración</p>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Variación</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analysis.metrics.sentenceLengthVariation.toFixed(1)}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">desv. estándar</p>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Palabras Únicas</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{(analysis.metrics.uniqueWordRatio * 100).toFixed(0)}%</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">diversidad léxica</p>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Voz Pasiva</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{(analysis.metrics.passiveVoiceRatio * 100).toFixed(0)}%</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">del texto</p>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Conectores</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analysis.metrics.formalConnectorCount}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">formales</p>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-1">Hedging</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analysis.metrics.hedgingPhraseCount}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500">frases evasivas</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Score Breakdown */}
+            {analysis.breakdown && (
+              <div>
+                <h4 className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <TrendingUp size={14} className="text-indigo-500" />
+                  Desglose por Categoría
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-medium text-slate-600 dark:text-gray-300">Patrones Lingüísticos</span>
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{analysis.breakdown.linguistic}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style={{width: `${analysis.breakdown.linguistic}%`}}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-medium text-slate-600 dark:text-gray-300">Estructura</span>
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{analysis.breakdown.structure}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500" style={{width: `${analysis.breakdown.structure}%`}}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-medium text-slate-600 dark:text-gray-300">Vocabulario</span>
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{analysis.breakdown.vocabulary}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all duration-500" style={{width: `${analysis.breakdown.vocabulary}%`}}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-medium text-slate-600 dark:text-gray-300">Contenido</span>
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{analysis.breakdown.content}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-500" style={{width: `${analysis.breakdown.content}%`}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           </div>
         </div>
       )}

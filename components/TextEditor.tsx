@@ -35,6 +35,19 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Word and character count
+  const { wordCount, charCount } = useMemo(() => {
+    if (!value) return { wordCount: 0, charCount: 0 };
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = value;
+    const text = tempDiv.textContent || tempDiv.innerText || '';
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    return {
+      wordCount: words.length,
+      charCount: text.length
+    };
+  }, [value]);
+
   // Singleton Tooltip State
   const [activeTooltip, setActiveTooltip] = useState<{
     x: number;
