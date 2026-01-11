@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Humanizador IA</title>
+    <!-- Keeping Tailwind CDN for simplicity in this setup. For a full production app, installing tailwind via npm is recommended. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              blob: "blob 7s infinite",
+              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            keyframes: {
+              blob: {
+                "0%": {
+                  transform: "translate(0px, 0px) scale(1)",
+                },
+                "33%": {
+                  transform: "translate(30px, -50px) scale(1.1)",
+                },
+                "66%": {
+                  transform: "translate(-20px, 20px) scale(0.9)",
+                },
+                "100%": {
+                  transform: "translate(0px, 0px) scale(1)",
+                },
+              },
+            },
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      /* Custom scrollbar for textareas */
+      textarea::-webkit-scrollbar, div::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      textarea::-webkit-scrollbar-track, div::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      textarea::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover, div::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+      /* Dark mode scrollbar */
+      .dark textarea::-webkit-scrollbar-thumb, .dark div::-webkit-scrollbar-thumb {
+        background: #334155;
+      }
+      .dark textarea::-webkit-scrollbar-thumb:hover, .dark div::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+      
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      
+      /* Utilities for custom highlighting */
+      .cursor-help {
+        cursor: help;
+      }
+
+      /* Glassmorphism Utilities - Updated to be less white/opaque */
+      .glass {
+        background: rgba(241, 245, 249, 0.6); /* Slate-100 base instead of white */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .dark .glass {
+        background: rgba(2, 6, 23, 0.7); /* Darker background for dark mode */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      .glass-card {
+        background: rgba(248, 250, 252, 0.65); /* Slate-50 base */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      .dark .glass-card {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+    "vite": "https://aistudiocdn.com/vite@^7.2.6",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "diff": "https://aistudiocdn.com/diff@^8.0.2",
+    "jspdf": "https://aistudiocdn.com/jspdf@^3.0.4",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
+    "file-saver": "https://aistudiocdn.com/file-saver@^2.0.5",
+    "mammoth": "https://aistudiocdn.com/mammoth@^1.6.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-200 dark:bg-[#020617] transition-colors duration-500 selection:bg-indigo-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
