@@ -298,7 +298,7 @@ const App: React.FC = () => {
 
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/50 dark:bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/10 shadow-sm">
                 <LayoutTemplate size={14} className="text-indigo-500"/>
-                Potenciado con {aiProvider === 'gemini' ? 'Google Gemini 2.0' : 'Groq Mixtral 8x7B'}
+                Potenciado con {aiProvider === 'gemini' ? 'Google Gemini 2.0' : 'Groq Llama 3.3 70B'}
             </div>
             <button
               onClick={() => setDarkMode(!darkMode)}

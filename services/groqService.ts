@@ -6,9 +6,9 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true
 });
 
-// Using Mixtral-8x7b (excellent free tier with 14,400 RPD)
-const ANALYSIS_MODEL = "mixtral-8x7b-32768";
-const HUMANIZE_MODEL = "mixtral-8x7b-32768";
+// Using Llama 3.3 70B (robust model with 280 tokens/sec)
+const ANALYSIS_MODEL = "llama-3.3-70b-versatile";
+const HUMANIZE_MODEL = "llama-3.3-70b-versatile";
 
 export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> => {
   try {

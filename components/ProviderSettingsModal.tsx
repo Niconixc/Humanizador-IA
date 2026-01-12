@@ -111,7 +111,7 @@ const ProviderSettingsModal: React.FC<Props> = ({ onClose, currentProvider, onPr
             className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="gemini">🔷 Google Gemini 2.0 (1,500 RPD gratis)</option>
-            <option value="groq">⚡ Groq Mixtral 8x7B (14,400 RPD gratis)</option>
+            <option value="groq">⚡ Groq Llama 3.3 70B (14,400 RPD gratis)</option>
           </select>
         </div>
 
