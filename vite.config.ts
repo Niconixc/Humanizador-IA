@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    // Expose the API_KEY safely to the client-side code
+    // Expose API keys safely to the client-side code
     'process.env.API_KEY': JSON.stringify(process.env.VITE_API_KEY || process.env.API_KEY),
+    'process.env.VITE_API_KEY': JSON.stringify(process.env.VITE_API_KEY || ''),
+    'process.env.GROQ_API_KEY': JSON.stringify(process.env.GROQ_API_KEY || ''),
   },
 });

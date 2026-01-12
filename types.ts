@@ -55,3 +55,6 @@ export enum AppState {
   COMPLETE = 'COMPLETE',
   ERROR = 'ERROR'
 }
+
+// AI Provider type for multi-provider support
+export type AIProvider = 'gemini' | 'groq';

@@ -5,9 +5,10 @@ import LoadingStatus from './components/LoadingStatus';
 import AnalysisDashboard from './components/AnalysisDashboard';
 import HistoryDrawer from './components/HistoryDrawer';
 import GhostwriterModal from './components/GhostwriterModal';
+import ProviderSettingsModal from './components/ProviderSettingsModal';
 import Toast from './components/Toast';
-import { AnalysisResult, AppState, HumanizeConfig, HistoryItem, GhostwriterConfig } from './types';
-import { analyzeTextForAI, humanizeText } from './services/geminiService';
+import { AnalysisResult, AppState, HumanizeConfig, HistoryItem, GhostwriterConfig, AIProvider } from './types';
+import { analyzeTextForAI, humanizeText } from './services/aiService';
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -38,6 +39,15 @@ const App: React.FC = () => {
     tone: 'academic',
     grammarLevel: 'university'
   });
+
+  // AI Provider State
+  const [aiProvider, setAiProvider] = useState<AIProvider>(() => {
+    const saved = localStorage.getItem('ai-provider');
+    return (saved as AIProvider) || 'gemini';
+  });
+
+  // Provider Settings Modal
+  const [showProviderSettings, setShowProviderSettings] = useState(false);
 
   // Load History from LocalStorage on mount
   useEffect(() => {
@@ -145,8 +155,8 @@ const App: React.FC = () => {
     setOutputText(''); // Clear previous results
 
     try {
-      const result = await analyzeTextForAI(inputText);
-      
+      const result = await analyzeTextForAI(inputText, aiProvider);
+
       // Only proceed if this operation is still the active one
       if (operationRef.current === opId) {
         setAnalysis(result);
@@ -159,7 +169,7 @@ const App: React.FC = () => {
         setAppState(AppState.ERROR);
       }
     }
-  }, [inputText]);
+  }, [inputText, aiProvider]);
 
   const handleHumanize = useCallback(async () => {
     if (!inputText.trim()) return;
@@ -184,19 +194,19 @@ const App: React.FC = () => {
     setOutputText(''); // Clear previous output
 
     try {
-      const humanized = await humanizeText(inputText, config, feedbackAnalysis, ghostwriterConfig);
-      
+      const humanized = await humanizeText(inputText, config, feedbackAnalysis, ghostwriterConfig, aiProvider);
+
       // Check for stale operation
       if (operationRef.current !== opId) return;
 
       setOutputText(humanized);
 
-      const newAnalysis = await analyzeTextForAI(humanized);
-      
+      const newAnalysis = await analyzeTextForAI(humanized, aiProvider);
+
       // Check for stale operation again after second await
       if (operationRef.current !== opId) return;
 
-      setAnalysis(newAnalysis); 
+      setAnalysis(newAnalysis);
 
       // Save to History
       const newItem: HistoryItem = {
@@ -215,7 +225,7 @@ const App: React.FC = () => {
         setAppState(AppState.ERROR);
       }
     }
-  }, [inputText, config, analysis, originalAnalysis, ghostwriterConfig]);
+  }, [inputText, config, analysis, originalAnalysis, ghostwriterConfig, aiProvider]);
 
   const handleClear = () => {
     setInputText('');
@@ -288,7 +298,7 @@ const App: React.FC = () => {
 
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/50 dark:bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/10 shadow-sm">
                 <LayoutTemplate size={14} className="text-indigo-500"/>
-                Potenciado con Google Gemini
+                Potenciado con {aiProvider === 'gemini' ? 'Google Gemini 2.0' : 'Groq Mixtral 8x7B'}
             </div>
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -333,7 +343,7 @@ const App: React.FC = () => {
                 <option value="phd">Doctorado</option>
               </select>
 
-              <select 
+              <select
                 value={config.tone}
                 onChange={(e) => setConfig(prev => ({ ...prev, tone: e.target.value as any }))}
                 title="Tono del texto: Académico (ensayos, papers), Casual (conversacional), Creativo (narrativo)"
@@ -343,6 +353,28 @@ const App: React.FC = () => {
                 <option value="casual">Casual</option>
                 <option value="creative">Creativo</option>
               </select>
+
+              <select
+                value={aiProvider}
+                onChange={(e) => {
+                  const newProvider = e.target.value as AIProvider;
+                  setAiProvider(newProvider);
+                  localStorage.setItem('ai-provider', newProvider);
+                }}
+                title="Proveedor de IA: Gemini (Google) o Groq (Mixtral)"
+                className="bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-gray-200 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent block p-2.5 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 cursor-pointer"
+              >
+                <option value="gemini">🔷 Gemini</option>
+                <option value="groq">⚡ Groq</option>
+              </select>
+
+              <button
+                onClick={() => setShowProviderSettings(true)}
+                className="p-2.5 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                title="Configurar API Keys"
+              >
+                <Settings2 size={18} className="text-slate-600 dark:text-slate-400" />
+              </button>
             </div>
           </div>
 
@@ -504,12 +536,20 @@ const App: React.FC = () => {
         onClearAll={() => setHistory([])}
       />
 
-      <GhostwriterModal 
+      <GhostwriterModal
         isOpen={showGhostwriter}
         onClose={() => setShowGhostwriter(false)}
         config={ghostwriterConfig}
         onSave={setGhostwriterConfig}
       />
+
+      {showProviderSettings && (
+        <ProviderSettingsModal
+          onClose={() => setShowProviderSettings(false)}
+          currentProvider={aiProvider}
+          onProviderChange={setAiProvider}
+        />
+      )}
 
       {/* Toast Notifications */}
       {toast && (
