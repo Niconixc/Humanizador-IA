@@ -6,7 +6,7 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true
 });
 
-// Using Llama 3.3 70B (robust model with 280 tokens/sec)
+// Using Llama 3.3 70B (robust model with 280 tokens/sec and 131K context)
 const ANALYSIS_MODEL = "llama-3.3-70b-versatile";
 const HUMANIZE_MODEL = "llama-3.3-70b-versatile";
 
