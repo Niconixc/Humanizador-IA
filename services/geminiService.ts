@@ -3,10 +3,10 @@ import { AnalysisResult, HumanizeConfig, GhostwriterConfig } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
-// Using stable gemini-pro model (available globally)
-const ANALYSIS_MODEL = "gemini-pro";
-// Use pro for rewriting
-const HUMANIZE_MODEL = "gemini-pro";
+// Using gemini-2.0-flash (available with good quotas)
+const ANALYSIS_MODEL = "gemini-2.0-flash-exp";
+// Use flash for rewriting
+const HUMANIZE_MODEL = "gemini-2.0-flash-exp";
 
 export const analyzeTextForAI = async (text: string): Promise<AnalysisResult> => {
   try {
