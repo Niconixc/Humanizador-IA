@@ -12,7 +12,8 @@ import {
   GitCompare,
   ZoomOut,
   ZoomIn,
-  RotateCcw
+  RotateCcw,
+  Activity
 } from 'lucide-react';
 import { diffWords } from 'diff';
 
