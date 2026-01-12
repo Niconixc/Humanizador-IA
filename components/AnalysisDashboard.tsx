@@ -6,7 +6,8 @@ import {
   Info,
   Brain,
   ShieldAlert,
-  CheckCircle
+  CheckCircle,
+  ScanSearch
 } from 'lucide-react';
 import { diffWords } from 'diff';
 
