@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import ScoreChart from './ScoreChart';
 import { AnalysisResult } from '../types';
-import { AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle, Info, ChevronDown, ChevronUp, Sparkles, Brain, FileText, Target } from 'lucide-react';
+import { AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle, Info, ChevronDown, ChevronUp, Sparkles, Brain, FileText, Target, ShieldAlert, CheckCircle } from 'lucide-react';
 import { diffWords } from 'diff';
 
 interface AnalysisDashboardProps {
