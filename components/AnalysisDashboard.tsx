@@ -7,7 +7,12 @@ import {
   Brain,
   ShieldAlert,
   CheckCircle,
-  ScanSearch
+  ScanSearch,
+  BarChart3,
+  GitCompare,
+  ZoomOut,
+  ZoomIn,
+  RotateCcw
 } from 'lucide-react';
 import { diffWords } from 'diff';
 
