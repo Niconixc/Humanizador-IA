@@ -259,11 +259,11 @@ export const humanizeText = async (
 
     // Estrategia Dinámica basada en el puntaje anterior
     let strategyPrompt = "";
-    
-    if (previousAnalysis && previousAnalysis.aiScore < 30) {
+
+    if (previousAnalysis && previousAnalysis.aiScore < 20) {
       // MODO PRESERVACIÓN (Evita que el humanizador arruine un buen texto)
       strategyPrompt = `
-      🛡️ MODO PULIDO LIGERO (El texto ya parece humano):
+      🛡️ MODO PULIDO LIGERO (El texto ya parece muy humano - score < 20%):
       1. NO REESCRIBAS TODO. El usuario solo quiere correcciones menores.
       2. Mantén el 90% del texto original.
       3. Solo cambia palabras muy formales por sinónimos más simples.
@@ -272,13 +272,15 @@ export const humanizeText = async (
     } else {
       // MODO ATAQUE AGRESIVO (El texto es muy robótico)
       strategyPrompt = `
-      🔥 MODO ANTI-DETECCIÓN EXTREMA (El texto es robótico/IA):
-      
-      TU OBJETIVO: Engañar a los detectores de IA y sonar como una persona real.
-      
+      🔥 MODO ANTI-DETECCIÓN EXTREMA (El texto tiene score de IA ${previousAnalysis?.aiScore || 50}%):
+
+      ⚠️ OBJETIVO CRÍTICO: Reducir el score de detección de IA a MENOS del 25%.
+
+      TU MISIÓN: Reescribir el texto para que suene 100% humano, eliminando TODOS los patrones de IA.
+
       ${humanStyleRules}
 
-      TÉCNICAS ANTI-DETECCIÓN OBLIGATORIAS:
+      TÉCNICAS ANTI-DETECCIÓN OBLIGATORIAS (APLICA TODAS):
       
       1. 🚫 PALABRAS PROHIBIDAS: Si usas alguna de estas, FALLARÁS: ${forbiddenWords.slice(0, 30).join(", ")}...
       
@@ -306,6 +308,18 @@ export const humanizeText = async (
          - ${!isAcademic ? 'Permite redundancias ocasionales (humanos repiten ideas)' : 'Varía conectores, no uses siempre los mismos'}
          - ${!isAcademic ? 'Usa conectores informales: "bueno", "entonces", "así que"' : 'Rompe reglas gramaticales menores si suena más natural'}
          - Elimina intros genéricas, ve directo al punto
+
+      7. 🎭 REESCRITURA RADICAL:
+         - NO te limites a cambiar palabras. REESCRIBE oraciones completas.
+         - Cambia el ORDEN de las ideas si es necesario.
+         - Usa SINÓNIMOS genuinos, no solo palabras más cortas.
+         - Agrega detalles específicos o ejemplos concretos cuando sea apropiado.
+         - Elimina frases que suenen corporativas o académicas en exceso.
+
+      8. 🔍 AUTO-VERIFICACIÓN:
+         - Después de reescribir, LEE el resultado.
+         - Pregúntate: "¿Esto suena como lo escribiría una persona normal?"
+         - Si detectas patrones repetitivos o formales, REESCRIBE de nuevo.
       `;
     }
 
