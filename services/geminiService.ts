@@ -199,7 +199,7 @@ export const humanizeText = async (
       3. NO uses Markdown.
     `;
 
-    // EXPANDED: 50+ palabras y frases que delatan IA
+    // EXPANDED: 100+ palabras y frases que delatan IA (especialmente para GPTZero)
     const forbiddenWords = [
       // Conectores robóticos
       "cabe destacar", "es importante mencionar", "es importante señalar", "es fundamental destacar",
@@ -230,7 +230,25 @@ export const humanizeText = async (
       
       // Frases introductorias típicas de IA
       "en este artículo", "a lo largo de este texto", "en las siguientes líneas",
-      "vale la pena mencionar", "conviene señalar", "resulta importante"
+      "vale la pena mencionar", "conviene señalar", "resulta importante",
+      
+      // NUEVAS: Frases corporativas que GPTZero detecta
+      "es una empresa que", "se dedica a", "tiene como objetivo", "cuyo propósito es",
+      "a través de", "mediante el cual", "por medio de", "con el fin de",
+      "básicamente", "fundamentalmente", "esencialmente", "principalmente",
+      "fue fundado", "fue creado", "fue establecido", "fue privatizado",
+      "en ese momento", "en aquel entonces", "durante ese período",
+      "cabe mencionar", "es preciso señalar", "resulta relevante",
+      
+      // NUEVAS: Transiciones formales predecibles
+      "en relación con", "con respecto a", "en cuanto a", "referente a",
+      "de acuerdo con", "según lo establecido", "tal como se mencionó",
+      "como se puede observar", "es evidente que", "se puede apreciar",
+      
+      // NUEVAS: Estructuras corporativas típicas
+      "forma parte de", "se encuentra ubicado", "cuenta con", "dispone de",
+      "lleva a cabo", "realiza actividades", "desarrolla operaciones",
+      "se caracteriza por", "destaca por", "sobresale por"
     ];
 
     const isAcademic = config.tone === 'academic';
@@ -270,56 +288,88 @@ export const humanizeText = async (
       4. Aplica las reglas de "Lenguaje Sencillo" pero mantén la estructura.
       `;
     } else {
-      // MODO ATAQUE AGRESIVO (El texto es muy robótico)
+      // MODO ATAQUE ULTRA-AGRESIVO ANTI-GPTZERO
       strategyPrompt = `
-      🔥 MODO ANTI-DETECCIÓN EXTREMA (El texto tiene score de IA ${previousAnalysis?.aiScore || 50}%):
+      🔥 MODO ANTI-GPTZERO ULTRA-AGRESIVO (Score actual de IA: ${previousAnalysis?.aiScore || 50}%):
 
-      ⚠️ OBJETIVO CRÍTICO: Reducir el score de detección de IA a MENOS del 25%.
+      ⚠️ OBJETIVO CRÍTICO: Reducir detección de GPTZero a MENOS del 20%.
 
-      TU MISIÓN: Reescribir el texto para que suene 100% humano, eliminando TODOS los patrones de IA.
+      🎯 TU MISIÓN: Reescribir para que GPTZero NO detecte patrones de IA.
 
       ${humanStyleRules}
 
-      TÉCNICAS ANTI-DETECCIÓN OBLIGATORIAS (APLICA TODAS):
-      
-      1. 🚫 PALABRAS PROHIBIDAS: Si usas alguna de estas, FALLARÁS: ${forbiddenWords.slice(0, 30).join(", ")}...
-      
-      2. 🌊 PERPLEJIDAD Y BURSTINESS (Variabilidad Extrema): 
-         - Alterna frases CORTAS (3-7 palabras) con frases LARGAS (20-30 palabras)
-         - Rompe la estructura predecible de sujeto-verbo-predicado
-         - Varía la longitud de párrafos (algunos de 2 líneas, otros de 6)
-      
-      3. � VARIACIÓN SINTÁCTICA:
-         - Reordena cláusulas (subordinadas antes/después)
-         - Alterna voz activa/pasiva estratégicamente
-         - Usa inversión de sujeto ocasionalmente
-      
-      4. 🗣️ INYECCIÓN DE HUMANIDAD:
-         - Añade marcadores de duda: "creo", "quizás", "probablemente"
-         - ${!isAcademic ? 'Usa paréntesis para pensamientos laterales' : 'Incluye ejemplos concretos (no genéricos)'}
-         - Muestra opinión o perspectiva personal
-      
-      5. 🎯 NATURALIZACIÓN DE VOCABULARIO:
-         - Reemplaza palabras "de diccionario" por coloquiales
-         - ${!isAcademic ? 'Usa contracciones cuando sea apropiado' : 'Prefiere palabras cortas sobre largas'}
-         - Evita sinónimos forzados, repite palabras si es natural
-      
-      6. ✨ IMPERFECCIONES CONTROLADAS:
-         - ${!isAcademic ? 'Permite redundancias ocasionales (humanos repiten ideas)' : 'Varía conectores, no uses siempre los mismos'}
-         - ${!isAcademic ? 'Usa conectores informales: "bueno", "entonces", "así que"' : 'Rompe reglas gramaticales menores si suena más natural'}
-         - Elimina intros genéricas, ve directo al punto
+      ═══════════════════════════════════════════════════════════════
+      TÉCNICAS ANTI-GPTZERO OBLIGATORIAS (APLICA TODAS O FALLARÁS):
+      ═══════════════════════════════════════════════════════════════
 
-      7. 🎭 REESCRITURA RADICAL:
-         - NO te limites a cambiar palabras. REESCRIBE oraciones completas.
-         - Cambia el ORDEN de las ideas si es necesario.
-         - Usa SINÓNIMOS genuinos, no solo palabras más cortas.
-         - Agrega detalles específicos o ejemplos concretos cuando sea apropiado.
-         - Elimina frases que suenen corporativas o académicas en exceso.
+      1. 🎲 VARIACIÓN EXTREMA DE LONGITUD (Anti-Perplejidad):
+         - Alterna oraciones MUY CORTAS (3-5 palabras) con oraciones LARGAS (25-35 palabras)
+         - Ejemplo CORRECTO: "Shougang es china. Opera en Perú desde los 90, cuando el gobierno privatizó Hierro Perú y esta empresa aprovechó para comprarla y expandir su negocio minero."
+         - Ejemplo INCORRECTO: "Shougang es una empresa china. Opera en Perú desde los años 90. Compró Hierro Perú cuando fue privatizado."
+         - NUNCA uses 3 oraciones seguidas de longitud similar
 
-      8. 🔍 AUTO-VERIFICACIÓN:
-         - Después de reescribir, LEE el resultado.
-         - Pregúntate: "¿Esto suena como lo escribiría una persona normal?"
-         - Si detectas patrones repetitivos o formales, REESCRIBE de nuevo.
+      2. 💬 LENGUAJE COLOQUIAL FORZADO (Anti-Formalidad):
+         - REEMPLAZA OBLIGATORIAMENTE estas frases corporativas:
+           * "es una empresa que" → ELIMINAR, usar solo el nombre
+           * "básicamente" → "o sea", "digamos", "tipo"
+           * "a través de" → "con", "mediante", "usando"
+           * "fue privatizado" → "lo privatizaron", "pasó a manos privadas"
+           * "en ese momento" → "entonces", "ahí", "en esos años"
+           * "fundamentalmente" → "en el fondo", "realmente"
+           * "adicionalmente" → "además", "también", "y"
+         - ${!isAcademic ? 'Usa contracciones: "pa\'" (para), "ta" (está), "q" (que)' : 'Prefiere palabras cortas y directas'}
+         - ${!isAcademic ? 'Añade muletillas: "bueno", "entonces", "pues", "mira"' : 'Usa conectores variados, no siempre los mismos'}
+
+      3. 🚫 PALABRAS PROHIBIDAS (USA Y FALLARÁS):
+         ${forbiddenWords.slice(0, 50).join(", ")}
+         - Si usas alguna de estas, GPTZero te detectará al 100%
+
+      4. 🎭 HUMANIZACIÓN FORZADA (Anti-Robótica):
+         - Añade opiniones sutiles: "interesante", "curioso", "llamativo", "sorprendente"
+         - ${!isAcademic ? 'Usa preguntas retóricas: "¿Y qué pasó después?", "¿Te imaginas?"' : 'Incluye ejemplos específicos, no genéricos'}
+         - Incluye dudas: "creo que", "me parece", "si no me equivoco", "supongo"
+         - ${!isAcademic ? 'Usa paréntesis para pensamientos: "(algo así)", "(más o menos)"' : 'Varía la estructura, no sigas patrones predecibles'}
+
+      5. 📊 SINÓNIMOS DINÁMICOS (Anti-Repetición):
+         - NUNCA repitas la misma palabra técnica más de 2 veces en todo el texto
+         - Alterna sinónimos genuinos:
+           * "empresa" → "compañía" → "firma" → "negocio" → "corporación"
+           * "siderúrgica" → "de acero" → "metalúrgica" → "del metal"
+           * "minera" → "de minas" → "extractiva" → "de minerales"
+         - Simplifica términos técnicos cuando sea posible
+
+      6. 🔀 REESCRITURA RADICAL (Anti-Predictibilidad):
+         - NO solo cambies palabras, REESCRIBE completamente las oraciones
+         - Cambia el ORDEN de las ideas (empieza por el final si es necesario)
+         - Divide oraciones largas en fragmentos cortos inesperados
+         - Une oraciones cortas de forma no convencional
+         - Ejemplo: En lugar de "La empresa fue fundada en 1992 y opera en Perú"
+           → "Desde 1992 opera en Perú. Shougang, la empresa."
+
+      7. 🎯 ELIMINACIÓN DE PATRONES CORPORATIVOS:
+         - NO uses estructura: "X es una Y que Z"
+         - NO uses listas formales con viñetas
+         - NO uses frases de transición predecibles
+         - Ejemplo MALO: "Shougang es una empresa que se dedica a la minería"
+         - Ejemplo BUENO: "Shougang mina hierro en Perú"
+
+      8. 🌊 BURSTINESS EXTREMO (Variación de Párrafos):
+         - Alterna párrafos cortos (1-2 oraciones) con párrafos largos (5-7 oraciones)
+         - NO hagas todos los párrafos del mismo tamaño
+         - Rompe la uniformidad visual del texto
+
+      9. 🔍 AUTO-VERIFICACIÓN OBLIGATORIA:
+         - Después de reescribir, LEE el resultado completo
+         - Pregúntate: "¿Esto suena como un blog personal o como Wikipedia?"
+         - Si suena "profesional" o "corporativo", REESCRIBE TODO de nuevo
+         - Debe sonar como una persona escribiendo casualmente, NO como un informe
+         - Si ves 3 oraciones seguidas de longitud similar, REESCRIBE
+
+      10. ${!isAcademic ? '💥 ROMPE REGLAS GRAMATICALES (Humanización Extrema):' : '📝 NATURALIDAD SOBRE PERFECCIÓN:'}
+          - ${!isAcademic ? 'Permite fragmentos sin verbo completo' : 'Prefiere claridad sobre corrección formal'}
+          - ${!isAcademic ? 'Usa puntos suspensivos ocasionalmente...' : 'Varía la puntuación, no siempre punto y coma'}
+          - ${!isAcademic ? 'Empieza oraciones con "Y" o "Pero" si suena natural' : 'Rompe patrones de subordinación predecibles'}
+          - ${!isAcademic ? 'Permite redundancias si así habla la gente' : 'Repite palabras clave en lugar de forzar sinónimos'}
       `;
     }
 
@@ -362,9 +412,9 @@ export const humanizeText = async (
       model: HUMANIZE_MODEL,
       contents: prompt,
       config: {
-        temperature: 1.2, // Increased from 1.0 for more creativity and variation
-        topP: 0.95,
-        topK: 60, // Increased from 40 for more vocabulary variety
+        temperature: 1.35, // Increased from 1.2 to 1.35 for MAXIMUM creativity and unpredictability (anti-GPTZero)
+        topP: 0.95,        // Keep at 0.95 for diverse vocabulary selection
+        topK: 80,          // Increased from 60 to 80 for even more vocabulary variety
       }
     });
 
